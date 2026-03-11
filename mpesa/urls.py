@@ -1,7 +1,7 @@
+# mpesa_app/urls.py
 from django.urls import path
-from .views import stkpush, mpesa_callback
+from .views import stk_push
 
 urlpatterns = [
-    path("stkpush/", stkpush),
-    path("callback/", mpesa_callback),
+    path('stkpush/', stk_push, name='stkpush'),
 ]
