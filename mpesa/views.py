@@ -44,7 +44,7 @@ def stk_push(request):
             "PartyB": business_short_code,
             "PhoneNumber": phone,
             "CallBackURL": "https://mydomain.com/mpesa-express-simulate/",
-            "AccountReference": "Test123",
+            "AccountReference": "GroceryMart",
             "TransactionDesc": "Payment test"
         }
 
