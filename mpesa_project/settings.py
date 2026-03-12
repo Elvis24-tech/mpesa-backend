@@ -3,6 +3,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 # ------------------------------
 # LOAD ENVIRONMENT VARIABLES
@@ -18,14 +19,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # ------------------------------
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-default")
-DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost", 'https://mpesa-backend-1-sbl9.onrender.com/').split(",")
+
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    "127.0.0.1,localhost"
+).split(",")
+
+# Required for Render HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # ------------------------------
 # APPLICATIONS
 # ------------------------------
 INSTALLED_APPS = [
-    # Django default apps
+    # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -33,11 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Third-party apps
+    # Third party
     "rest_framework",
     "corsheaders",
 
-    # Local apps
+    # Local
     "mpesa",
 ]
 
@@ -47,6 +56,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+
+    # WhiteNoise middleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -61,18 +74,18 @@ MIDDLEWARE = [
 ROOT_URLCONF = "mpesa_project.urls"
 
 # ------------------------------
-# TEMPLATES (FIXED FOR ADMIN)
+# TEMPLATES
 # ------------------------------
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # you can create a templates folder
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                "django.template.context_processors.request",  # required for admin
-                "django.contrib.auth.context_processors.auth",  # required for admin
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
         },
@@ -88,10 +101,10 @@ WSGI_APPLICATION = "mpesa_project.wsgi.application"
 # DATABASE
 # ------------------------------
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",  # local dev
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
 # ------------------------------
@@ -116,15 +129,21 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # ------------------------------
 LANGUAGE_CODE = "en-us"
+
 TIME_ZONE = "Africa/Nairobi"
+
 USE_I18N = True
+
 USE_TZ = True
 
 # ------------------------------
 # STATIC FILES
 # ------------------------------
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"  # for Render deployment
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # ------------------------------
 # DEFAULT PRIMARY KEY
@@ -137,16 +156,22 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    # add your production frontend URL when deployed
 ]
+
+CORS_ALLOW_ALL_ORIGINS = False
 
 # ------------------------------
 # M-PESA CONFIGURATION
 # ------------------------------
 MPESA_CONSUMER_KEY = os.getenv("MPESA_CONSUMER_KEY")
+
 MPESA_CONSUMER_SECRET = os.getenv("MPESA_CONSUMER_SECRET")
+
 MPESA_SHORTCODE = os.getenv("MPESA_SHORTCODE", "174379")
+
 MPESA_PASSKEY = os.getenv("MPESA_PASSKEY")
+
 MPESA_CALLBACK_URL = os.getenv(
-    "MPESA_CALLBACK_URL", "http://127.0.0.1:8000/api/mpesa/callback/"
+    "MPESA_CALLBACK_URL",
+    "http://127.0.0.1:8000/api/mpesa/callback/"
 )
