@@ -2,8 +2,33 @@ services:
   - type: web
     name: mpesa-backend
     runtime: python
+    plan: free
     buildCommand: "./build.sh"
     startCommand: "./start.sh"
     envVars:
       - key: PYTHON_VERSION
         value: 3.13
+
+      - key: SECRET_KEY
+        value: c2z1ktm6an7c3kvc2+b(&c5an=%axv)6=o9htysvcb@2k*62cu
+
+      - key: DEBUG
+        value: False
+
+      - key: ALLOWED_HOSTS
+        value: mpesa-backend.onrender.com
+
+      - key: MPESA_CONSUMER_KEY
+        value: l4hUGCG1vJEa70ul9GoXrLIkpkp0GeCFaPhg3mj7K3j7ntQi
+
+      - key: MPESA_CONSUMER_SECRET
+        value: u2VcP3siLWFgjdEVGqH287eVjXwvWfsJMq0FCZ56fKGFUf9IRUlfs94TcrAPFcc3
+
+      - key: MPESA_SHORTCODE
+        value: 174379
+
+      - key: MPESA_PASSKEY
+        value: bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+
+      - key: MPESA_CALLBACK_URL
+        value: https://mpesa-backend.onrender.com/api/mpesa/callback/
